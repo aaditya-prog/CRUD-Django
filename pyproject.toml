@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "usercrud"
+version = "0.1.0"
+description = ""
+authors = ["Anupam1223 <anupam.siwakoti@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.2.4"
+django-crispy-forms = "^1.12.0"
+decouple = "^0.0.7"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.2"
+black = "^21.6b0"
+mypy = "^0.902"
+bandit = "^1.7.0"
+django-sass-processor = "^1.0.1"
+Pillow = "^8.2.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
