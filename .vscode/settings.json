@@ -20,4 +20,10 @@
     "html.format.wrapAttributes": "aligned-multiple",
     "html.format.indentHandlebars": true,
     "html.format.preserveNewLines": false,
+    "files.associations": {
+        "**/*.html": "html",
+        "**/templates/**/*.html": "django-html",
+        "**/templates/**/*": "django-txt",
+        "**/requirements{/**,*}.{txt,in}": "pip-requirements"
+    },
 }

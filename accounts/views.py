@@ -1,4 +1,5 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, redirect
+from django.urls import reverse
 from .forms import RegisterForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
@@ -7,16 +8,40 @@ from .models import CustomUser
 from django.core.exceptions import ValidationError
 from django.contrib.auth import update_session_auth_hash
 from django.core.mail import EmailMessage
-from django.views.generic import View
 from django.utils.encoding import (
     force_bytes,
+    force_str,
     force_text,
     DjangoUnicodeDecodeError,
 )
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
-from .utlis import token_generator
+from .utlis import generate_token
+from django.template.loader import render_to_string
+
+
+def send_activation_email(user, request):
+    current_site = get_current_site(request)
+    email_subject = "Complete your registration"
+    email_body = render_to_string(
+        "accounts/activate.html",
+        {
+            "user": user,
+            "domain": current_site,
+            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+            "token": generate_token.make_token(user),
+        },
+    )
+
+    email = EmailMessage(
+        subject=email_subject,
+        body=email_body,
+        to=[
+            user.email,
+        ],
+    )
+
+    email.send()
 
 
 def register(request):
@@ -39,47 +64,20 @@ def register(request):
                 raise ValidationError(
                     "Invalid Name, enter a valid name and try again."
                 )
-            account = CustomUser(
+            user = CustomUser(
                 email=Email,
                 full_name=Name,
                 address=Address,
                 password=Password,
             )
-            # account.is_active = False
-            account.set_password(Password)
-            account.save()
-            # path_to_view
-            # getting domain we are on
-            # relative url to verification
-            # encode uid
-            # token (one tiem use)
-            # current_site = get_current_site(request)
-            # email_body = {
-            #     "domain": current_site.domain,
-            #     "uid": urlsafe_base64_encode(force_bytes(CustomUser.pk)),
-            #     "token": token_generator.make_token(CustomUser),
-            # }
-            # link = reverse(
-            #     "accounts:activate",
-            #     kwargs={
-            #         "uidb64": email_body["uid"],
-            #         "token": email_body["token"],
-            #     },
-            # )
-            # activate_url = "http://" + current_site.domain + link
-            # email_body = (
-            #     "Please use this link to verify your account/n" + activate_url
-            # )
-            # email_subject = "Complete your registration"
-            # email = EmailMessage(
-            #     email_subject,
-            #     email_body,
-            #     "noreply@crud.com",
-            #     [Email],
-            # )
-            # email.send(fail_silently=False)
+            user.is_active = False
+            user.set_password(Password)
+            user.save()
+            send_activation_email(user, request)
             messages.success(
-                request, "User registration successful, login to continue."
+                request,
+                "User registration successful, an email has been sent to you,"
+                " Verify to login.",
             )
         else:
             messages.error(request, "registration failed, try again.")
@@ -95,6 +93,13 @@ def user_login(request):
             un = fm.cleaned_data["username"]
             pw = fm.cleaned_data["password"]
             user = authenticate(username=un, password=pw)
+            if not user.is_active:
+                messages.error(
+                    request,
+                    "Your email has not been verified yet, verify your email"
+                    " first.",
+                )
+                return render(request, "accounts/login.html", {"form": fm})
             if user is not None:
                 login(request, user)
                 return HttpResponseRedirect("/user/")
@@ -124,6 +129,18 @@ def profile(request):
     return render(request, "accounts/profile.html")
 
 
-class VerificationView(View):
-    def get(self, request, uid, token):
-        return HttpResponseRedirect("accounts/login")
+def activate_user(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+
+    except Exception as e:
+        user = None
+
+    if user and generate_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, "Email verified")
+        return redirect(reverse("accounts:login"))
+    else:
+        return render(request, "accounts/activate-failed.html", {"user": user})
