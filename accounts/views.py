@@ -1,23 +1,43 @@
-from django.shortcuts import render, HttpResponseRedirect, redirect
-from django.urls import reverse
-from .forms import RegisterForm
 from django.contrib import messages
+from django.contrib.auth import (
+    authenticate,
+    login,
+    logout,
+    update_session_auth_hash,
+)
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
-from django.contrib.auth import update_session_auth_hash
 from django.core.mail import EmailMessage
+from django.shortcuts import HttpResponseRedirect, redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.encoding import (
+    DjangoUnicodeDecodeError,
     force_bytes,
     force_str,
     force_text,
-    DjangoUnicodeDecodeError,
 )
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+
+from .forms import AddImageForm, RegisterForm
+from .models import CustomUser, Profile
 from .utlis import generate_token
-from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
+
+
+def login_excluded(redirect_to):
+    """This decorator kicks authenticated users out of a view"""
+
+    def _method_wrapper(view_method):
+        def _arguments_wrapper(request, *args, **kwargs):
+            if request.user.is_authenticated:
+                return redirect(redirect_to)
+            return view_method(request, *args, **kwargs)
+
+        return _arguments_wrapper
+
+    return _method_wrapper
 
 
 def send_activation_email(user, request):
@@ -44,6 +64,7 @@ def send_activation_email(user, request):
     email.send()
 
 
+@login_excluded("user:userread")
 def register(request):
     if request.method == "POST":
         fm = RegisterForm(request.POST)
@@ -86,6 +107,7 @@ def register(request):
     return render(request, "accounts/register.html", {"form": fm})
 
 
+@login_excluded("user:userread")
 def user_login(request):
     if request.method == "POST":
         fm = AuthenticationForm(request=request, data=request.POST)
@@ -113,6 +135,7 @@ def user_logout(request):
     return HttpResponseRedirect("/accounts/login")
 
 
+@login_required(redirect_field_name="")
 def user_change_pass(request):
     if request.method == "POST":
         fm = PasswordChangeForm(user=request.user, data=request.POST)
@@ -126,7 +149,17 @@ def user_change_pass(request):
 
 
 def profile(request):
-    return render(request, "accounts/profile.html")
+    if request.method == "POST":
+        fm = AddImageForm(request.POST, request.FILES, instance=request.user)
+        if fm.is_valid():
+            fm.save()
+            messages.success(request, "Profile Picture Updated")
+            return redirect("accounts:profile")
+        else:
+            messages.error(request, "Could not upload image, try again.")
+    else:
+        fm = AddImageForm()
+    return render(request, "accounts/profile.html", {"form": fm})
 
 
 def activate_user(request, uidb64, token):

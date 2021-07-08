@@ -1,7 +1,8 @@
-from django.db import models
-from django.db.models.fields import CharField
 import datetime
 import os
+
+from django.db import models
+from django.db.models.fields import CharField
 
 
 def filepath(request, filename):

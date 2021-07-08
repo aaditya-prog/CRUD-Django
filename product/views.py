@@ -1,9 +1,10 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from .forms import ProductForm
-from .models import productModel
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+
+from .forms import ProductForm
+from .models import productModel
 
 # Create your views here.
 

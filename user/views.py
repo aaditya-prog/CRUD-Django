@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import login
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+
 from .forms import UserAddForm
 from .models import UserAddModel
-from django.contrib.auth.decorators import login_required
 
 
 # Add User

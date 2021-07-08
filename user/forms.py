@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.messages.api import error
 from django.forms import widgets
+
 from .models import UserAddModel
 
 
@@ -46,7 +47,11 @@ class UserAddForm(forms.ModelForm):
         error_messages = {
             "name": {"required": "You must provide your name"},
             "address": {"required": "You must enter your address"},
-            "email": {"required": "You must enter your email for contact purposes"},
-            "password": {"required": "You must provide an appropriate password"},
+            "email": {
+                "required": "You must enter your email for contact purposes"
+            },
+            "password": {
+                "required": "You must provide an appropriate password"
+            },
             "image": {"required": "Error: user image required"},
         }

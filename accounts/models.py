@@ -1,8 +1,6 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-)
+from PIL import Image
 
 
 class UserManager(BaseUserManager):
@@ -87,3 +85,11 @@ class CustomUser(AbstractBaseUser):
 
     def is_superuser(self):
         return self.admin
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    image = models.ImageField(default="default.png", upload_to="profile_pics")
+
+    def __str__(self):
+        return f"{self.user.full_name} Profile"

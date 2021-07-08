@@ -1,6 +1,5 @@
 from django import forms
-from .models import CustomUser
-from django.contrib.auth import password_validation
+from .models import CustomUser, Profile
 
 
 class RegisterForm(forms.ModelForm):
@@ -48,3 +47,16 @@ class RegisterForm(forms.ModelForm):
             ),
         }
 
+
+class AddImageForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["image"]
+
+        widgets = {
+            "image": forms.FileInput(
+                attrs={
+                    "class": "form-control-file",
+                }
+            ),
+        }

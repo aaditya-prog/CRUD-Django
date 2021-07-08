@@ -34,22 +34,40 @@
     </nav>
     <div class="container mt-4 mb-4">
       <div class="row">
-        <div class="col-md-6 mx-auto">
+        <div class="col-md-4 mx-auto">
           <div
-            class="card bg-white text-secondary align-items-center text-center">
-            
+            class="card bg-white text-secondary align-items-center text-center"
+          >
+            <div class="align-items-end">
+              <a
+                href="{% url 'accounts:changepass' %}"
+                class="mt-2 align-items-end"
+                >Change Password</a
+              >
+            </div>
+            <div class="m-b-25">
+              <img
+                src="{{user.profile.image.url}}"
+                class="img-radius"
+                alt="User-Profile-Image"
+              />
+            </div>
+
             <div class="card-body">
-              <h5 class="card-title .bg-primary">Profile</h5>
-              <p class="card-text"></p>
-              <a href="{% url 'user:userread' %}" class="">Upload Profile Image</a>
-                <div class = "text-center">
-                  <img class="card-image" src="{%static 'dist/img/change.png' %}" alt="forgotpass" />
-                </div>
-              <form method="POST" novalidate>
-                {% csrf_token %} {{form|crispy}}
-                <input class="btn btn-light" type="submit" value="Update Picture"/>
-                <a href="{% url 'accounts:changepass' %}" class="btn btn-light">Change Password</a>
+              <h2 class="card-title .bg-primary account-heading">
+                {{ user.full_name }}
+              </h2>
+              <p class="card-text text-secondary">{{ user.email }}</p>
+              <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %} {{form.as_p}}
+                <input
+                  class="btn btn-primary"
+                  type="submit"
+                  value="Upload Image"
+                />
               </form>
+              <p class="card-text mt-3"></p>
+
               {% for message in messages %}
               <div class="alert alert-{{message.tags}} mt-2" role="alert">
                 {{message}}
