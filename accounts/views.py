@@ -148,9 +148,12 @@ def user_change_pass(request):
     return render(request, "accounts/changepass.html", {"form": fm})
 
 
+@login_required(redirect_field_name="")
 def profile(request):
     if request.method == "POST":
-        fm = AddImageForm(request.POST, request.FILES, instance=request.user)
+        fm = AddImageForm(
+            request.POST, request.FILES, instance=request.user.profile
+        )
         if fm.is_valid():
             fm.save()
             messages.success(request, "Profile Picture Updated")

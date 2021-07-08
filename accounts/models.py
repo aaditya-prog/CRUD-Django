@@ -55,8 +55,6 @@ class CustomUser(AbstractBaseUser):
     )
     USERNAME_FIELD = "email"
 
-    update_password = True
-
     # def save(self, *args, **kwargs):
     #     if self.admin != "True" and self.update_password:
     #         self.set_password(self.password)
@@ -89,7 +87,17 @@ class CustomUser(AbstractBaseUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    image = models.ImageField(default="default.png", upload_to="profile_pics")
+    image = models.ImageField(default="default.png", upload_to="profile_pics/")
 
     def __str__(self):
         return f"{self.user.full_name} Profile"
+
+    def save(self, *args, **kwargs):
+        super(Profile, self).save(*args, **kwargs)
+
+        img = Image.open(self.image.path)
+
+        if img.height > 200 or img.width > 200:
+            output_size = (200, 200)
+            img.thumbnail(output_size)
+            img.save(self.image.path)

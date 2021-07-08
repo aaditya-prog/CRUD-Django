@@ -1,5 +1,7 @@
 from django import forms
 from .models import CustomUser, Profile
+from django.forms import ModelForm
+from django.contrib.auth.password_validation import validate_password
 
 
 class RegisterForm(forms.ModelForm):
@@ -48,7 +50,7 @@ class RegisterForm(forms.ModelForm):
         }
 
 
-class AddImageForm(forms.ModelForm):
+class AddImageForm(ModelForm):
     class Meta:
         model = Profile
         fields = ["image"]

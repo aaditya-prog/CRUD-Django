@@ -35,7 +35,7 @@
         <li class="nav-item">
           <a href="{% url 'accounts:logout' %}" class="btn btn-dark">Log out</a>
         </li>
-        </ul>s
+        </ul>
       </nav>
       </div>
       <!-- Main Sidebar Container -->
@@ -57,13 +57,13 @@
           <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
               <img
-                src="{%static 'dist/img/traveler1.png' %}"
+                src="{{user.profile.image.url}}"
                 class="img-circle elevation-2"
                 alt="User Image"
               />
             </div>
             <div class="info">
-              <a href="#" class="d-block">Aaditya Dulal</a>
+              <a href="{% url 'accounts:profile' %}" class="d-block">{{user.full_name}}</a>
             </div>
           </div>
 
