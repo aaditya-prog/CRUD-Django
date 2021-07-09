@@ -19,7 +19,6 @@ from django.utils.encoding import (
     force_text,
 )
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-
 from .forms import AddImageForm, RegisterForm
 from .models import CustomUser, Profile
 from .utlis import generate_token
@@ -130,6 +129,36 @@ def user_login(request):
     return render(request, "accounts/login.html", {"form": fm})
 
 
+def accounts(request):
+    userdata = CustomUser.objects.all()
+    return render(
+        request, "accounts/manage/accounts.html", {"userdata": userdata}
+    )
+
+
+def delete_account(request, id):
+    if request.method == "POST":
+        data = CustomUser.objects.get(pk=id)
+        data.delete()
+        return HttpResponseRedirect("/accounts/")
+
+
+def update_account(request, id):
+    if request.method == "POST":
+        data = CustomUser.objects.get(pk=id)
+        fm = RegisterForm(request.POST, instance=data)
+        if fm.is_valid():
+            fm.set_password(Password)
+            fm.save()
+            messages.success(request, "User details updated successfully.")
+        else:
+            messages.error(request, "Update Failed, try again.")
+    else:
+        data = CustomUser.objects.get(pk=id)
+        fm = RegisterForm(instance=data)
+    return render(request, "accounts/manage/update.html", {"form": fm})
+
+
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect("/accounts/login")
@@ -145,7 +174,7 @@ def user_change_pass(request):
             update_session_auth_hash(request, fm.user)
     else:
         fm = PasswordChangeForm(user=request.user)
-    return render(request, "accounts/changepass.html", {"form": fm})
+    return render(request, "accounts/password/changepass.html", {"form": fm})
 
 
 @login_required(redirect_field_name="")
@@ -176,7 +205,7 @@ def activate_user(request, uidb64, token):
     if user and generate_token.check_token(user, token):
         user.is_active = True
         user.save()
-        messages.success(request, "Email verified")
+        messages.success(request, "Email verified, login to continue.")
         return redirect(reverse("accounts:login"))
     else:
         return render(request, "accounts/activate-failed.html", {"user": user})

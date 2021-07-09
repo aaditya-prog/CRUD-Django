@@ -42,19 +42,17 @@
             <div class="card-body">
               <h5 class="card-title .bg-primary">Login</h5>
               <p class="card-text">
-                Login to get access to the website and manage users, products,
-                and categories.
+                {% for message in messages %}
+              <div class="alert alert-{{message.tags}} mt-2" role="alert">
+                {{message}}
+              </div>
+                {% endfor %}
               </p>
               <form method="POST">
                 {% csrf_token %} {{form|crispy}}
                 <a href="{% url 'reset_password' %}">Forgot your password?</a> </br> </br>
                 <input class="btn btn-primary" type="submit" value="Login" />
               </form>
-              {% for message in messages %}
-              <div class="alert alert-{{message.tags}} mt-2" role="alert">
-                {{message}}
-              </div>
-              {% endfor %}
               <p class="card-text mt-3">
                 Not a registered member? Sign up first.
               </p>

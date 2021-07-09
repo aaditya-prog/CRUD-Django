@@ -34,18 +34,16 @@
             <div class="card-body">
               <h5 class="card-title .bg-primary">Register</h5>
               <p class="card-text">
-                Register to get access to the website and manage users,
-                products, and categories.
+               {% for message in messages %}
+              <div class="alert alert-{{message.tags}} mt-2" role="alert">
+                {{message}}
+              </div>
+              {% endfor %}
               </p>
               <form method="POST">
                 {% csrf_token %} {{form|crispy}}
                 <input class="btn btn-primary" type="submit" value="Register" />
               </form>
-              {% for message in messages %}
-              <div class="alert alert-{{message.tags}} mt-2" role="alert">
-                {{message}}
-              </div>
-              {% endfor %}
               <p class="card-text mt-3">Already a registered user? Log in.</p>
               <a href="{% url 'accounts:login' %}" class="btn btn-danger"
                 >Login</a

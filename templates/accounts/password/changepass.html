@@ -41,16 +41,17 @@
             <img src="{%static 'dist/img/change.png' %}" alt="forgotpass" />
             <div class="card-body">
               <h5 class="card-title .bg-primary">Change password</h5>
-              <p class="card-text"></p>
-              <form method="POST" novalidate>
-                {% csrf_token %} {{form|crispy}}
-                <input class="btn btn-primary" type="submit" value="Confirm" />
-              </form>
-              {% for message in messages %}
+              <p class="card-text">
+                {% for message in messages %}
               <div class="alert alert-{{message.tags}} mt-2" role="alert">
                 {{message}}
               </div>
               {% endfor %}
+              </p>
+              <form method="POST" novalidate>
+                {% csrf_token %} {{form|crispy}}
+                <input class="btn btn-primary" type="submit" value="Confirm" />
+              </form>
               <p class="card-text mt-3">Get back to profile.</p>
               <a href="{% url 'accounts:profile' %}" class="btn btn-danger"
                 >Profile</a

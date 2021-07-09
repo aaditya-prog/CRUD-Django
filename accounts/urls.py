@@ -14,4 +14,7 @@ urlpatterns = [
         views.activate_user,
         name="activate",
     ),
+    path("", views.accounts, name="accounts"),
+    path("delete/<int:id>", views.delete_account, name="delete"),
+    path("update/<int:id>", views.update_account, name="update"),
 ]
