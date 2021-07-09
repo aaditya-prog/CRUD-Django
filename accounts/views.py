@@ -1,3 +1,4 @@
+from bdb import set_trace
 from django.contrib import messages
 from django.contrib.auth import (
     authenticate,
@@ -24,6 +25,7 @@ from .decorators import login_excluded
 from .forms import AddImageForm, RegisterForm
 from .models import CustomUser, Profile
 from .utlis import generate_token
+from django.contrib.auth.hashers import make_password
 
 
 # function to send an activation email
@@ -131,37 +133,19 @@ def add_account(request):
         fm = RegisterForm()
     return render(request, "accounts/manage/add.html", {"form": fm})
 
+# import pdb
+
+#         pdb.set_trace()
 
 # function to update user details, only accesible by admin
 def update_account(request, id):
     if request.method == "POST":
         data = CustomUser.objects.get(pk=id)
-        fm = RegisterForm(request.POST, instance=data)
+        data1 = request.POST.copy()
+        data1["password"] = make_password(request.POST["password"])
+        fm = RegisterForm(data1, instance=data)
         if fm.is_valid():
-            Name = fm.cleaned_data["full_name"]
-            Address = fm.cleaned_data["address"]
-            Email = fm.cleaned_data["email"]
-            Password = fm.cleaned_data["password"]
-            if len(Name) < 4:
-                raise ValidationError(
-                    "Invalid Name, enter a valid name and try again."
-                )
-            if len(Address) < 4:
-                raise ValidationError(
-                    "Invalid Address, enter a valid address and try again."
-                )
-            if len(Email) < 10:
-                raise ValidationError(
-                    "Invalid Name, enter a valid name and try again."
-                )
-            user = CustomUser(
-                email=Email,
-                full_name=Name,
-                address=Address,
-                password=Password,
-            )
-            user.set_password(Password)
-            user.save()
+            fm.save()
             messages.success(request, "User details updated successfully.")
         else:
             messages.error(request, "Update Failed, try again.")
