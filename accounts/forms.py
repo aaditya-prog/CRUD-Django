@@ -1,7 +1,8 @@
 from django import forms
-from .models import CustomUser, Profile
-from django.forms import ModelForm
 from django.contrib.auth.password_validation import validate_password
+from django.forms import ModelForm
+
+from .models import CustomUser, Profile
 
 
 class RegisterForm(forms.ModelForm):

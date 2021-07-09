@@ -15,6 +15,7 @@ urlpatterns = [
         name="activate",
     ),
     path("", views.accounts, name="accounts"),
+    path("add", views.add_account, name="add"),
     path("delete/<int:id>", views.delete_account, name="delete"),
     path("update/<int:id>", views.update_account, name="update"),
 ]

@@ -5,6 +5,7 @@ from django.contrib.auth import (
     logout,
     update_session_auth_hash,
 )
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
@@ -19,26 +20,13 @@ from django.utils.encoding import (
     force_text,
 )
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from .decorators import login_excluded
 from .forms import AddImageForm, RegisterForm
 from .models import CustomUser, Profile
 from .utlis import generate_token
-from django.contrib.auth.decorators import login_required
 
 
-def login_excluded(redirect_to):
-    """This decorator kicks authenticated users out of a view"""
-
-    def _method_wrapper(view_method):
-        def _arguments_wrapper(request, *args, **kwargs):
-            if request.user.is_authenticated:
-                return redirect(redirect_to)
-            return view_method(request, *args, **kwargs)
-
-        return _arguments_wrapper
-
-    return _method_wrapper
-
-
+# function to send an activation email
 def send_activation_email(user, request):
     current_site = get_current_site(request)
     email_subject = "Complete your registration"
@@ -63,7 +51,8 @@ def send_activation_email(user, request):
     email.send()
 
 
-@login_excluded("user:userread")
+# function to register a user
+@login_excluded("accounts:accounts")
 def register(request):
     if request.method == "POST":
         fm = RegisterForm(request.POST)
@@ -106,7 +95,84 @@ def register(request):
     return render(request, "accounts/register.html", {"form": fm})
 
 
-@login_excluded("user:userread")
+# function to add user, only accesible by admin
+def add_account(request):
+    if request.method == "POST":
+        fm = RegisterForm(request.POST)
+        if fm.is_valid():
+            Name = fm.cleaned_data["full_name"]
+            Address = fm.cleaned_data["address"]
+            Email = fm.cleaned_data["email"]
+            Password = fm.cleaned_data["password"]
+            if len(Name) < 4:
+                raise ValidationError(
+                    "Invalid Name, enter a valid name and try again."
+                )
+            if len(Address) < 4:
+                raise ValidationError(
+                    "Invalid Address, enter a valid address and try again."
+                )
+            if len(Email) < 10:
+                raise ValidationError(
+                    "Invalid Name, enter a valid name and try again."
+                )
+            user = CustomUser(
+                email=Email,
+                full_name=Name,
+                address=Address,
+                password=Password,
+            )
+            user.set_password(Password)
+            user.save()
+            messages.success(request, "User details updated successfully.")
+        else:
+            messages.error(request, "Update Failed, try again.")
+    else:
+        fm = RegisterForm()
+    return render(request, "accounts/manage/add.html", {"form": fm})
+
+
+# function to update user details, only accesible by admin
+def update_account(request, id):
+    if request.method == "POST":
+        data = CustomUser.objects.get(pk=id)
+        fm = RegisterForm(request.POST, instance=data)
+        if fm.is_valid():
+            Name = fm.cleaned_data["full_name"]
+            Address = fm.cleaned_data["address"]
+            Email = fm.cleaned_data["email"]
+            Password = fm.cleaned_data["password"]
+            if len(Name) < 4:
+                raise ValidationError(
+                    "Invalid Name, enter a valid name and try again."
+                )
+            if len(Address) < 4:
+                raise ValidationError(
+                    "Invalid Address, enter a valid address and try again."
+                )
+            if len(Email) < 10:
+                raise ValidationError(
+                    "Invalid Name, enter a valid name and try again."
+                )
+            user = CustomUser(
+                email=Email,
+                full_name=Name,
+                address=Address,
+                password=Password,
+            )
+            user.set_password(Password)
+            user.save()
+            messages.success(request, "User details updated successfully.")
+        else:
+            messages.error(request, "Update Failed, try again.")
+    else:
+        data = CustomUser.objects.get(pk=id)
+        fm = RegisterForm(instance=data)
+    return render(request, "accounts/manage/update.html", {"form": fm})
+
+
+# function to login
+@login_excluded("accounts:accounts")
 def user_login(request):
     if request.method == "POST":
         fm = AuthenticationForm(request=request, data=request.POST)
@@ -123,12 +189,13 @@ def user_login(request):
                 return render(request, "accounts/login.html", {"form": fm})
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect("/user/")
+                return HttpResponseRedirect("/accounts/")
     else:
         fm = AuthenticationForm()
     return render(request, "accounts/login.html", {"form": fm})
 
 
+# function to show the account details from the database, only accessible to the admins.
 def accounts(request):
     userdata = CustomUser.objects.all()
     return render(
@@ -136,6 +203,7 @@ def accounts(request):
     )
 
 
+# function to delete an account, only accessible to the admins.
 def delete_account(request, id):
     if request.method == "POST":
         data = CustomUser.objects.get(pk=id)
@@ -143,27 +211,13 @@ def delete_account(request, id):
         return HttpResponseRedirect("/accounts/")
 
 
-def update_account(request, id):
-    if request.method == "POST":
-        data = CustomUser.objects.get(pk=id)
-        fm = RegisterForm(request.POST, instance=data)
-        if fm.is_valid():
-            fm.set_password(Password)
-            fm.save()
-            messages.success(request, "User details updated successfully.")
-        else:
-            messages.error(request, "Update Failed, try again.")
-    else:
-        data = CustomUser.objects.get(pk=id)
-        fm = RegisterForm(instance=data)
-    return render(request, "accounts/manage/update.html", {"form": fm})
-
-
+# function to log the authenticated user out.
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect("/accounts/login")
 
 
+# function to change the password
 @login_required(redirect_field_name="")
 def user_change_pass(request):
     if request.method == "POST":
@@ -177,6 +231,7 @@ def user_change_pass(request):
     return render(request, "accounts/password/changepass.html", {"form": fm})
 
 
+# function to display the details and image of the authenciated, as well as update image.
 @login_required(redirect_field_name="")
 def profile(request):
     if request.method == "POST":
@@ -194,6 +249,7 @@ def profile(request):
     return render(request, "accounts/profile.html", {"form": fm})
 
 
+# function to activate the user after the link is clicked.
 def activate_user(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))

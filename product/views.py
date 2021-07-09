@@ -19,9 +19,7 @@ def productAdd(request):
             st = frm.cleaned_data["stock"]
             pr = frm.cleaned_data["price"]
             img = frm.cleaned_data["image"]
-            product = productModel(
-                name=nm, quantity=qt, stock=st, price=pr, image=img
-            )
+            product = productModel(name=nm, quantity=qt, stock=st, price=pr, image=img)
             product.save()
             frm = ProductForm()
             messages.success(request, "Product added successfully.")

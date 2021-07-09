@@ -37,14 +37,14 @@
                     {% for message in messages %}
                   <div class="d-flex justify-content-center alert alert-{{message.tags}} mt-2" role="alert">Message:{{message}}</div>
                   {% endfor %}
-              
+                  {% load crispy_forms_tags %}
                   <form method="POST" enctype="multipart/form-data" novalidate>
                    {% csrf_token %}
                     <div class="card-body">
-                    {% for fields in form %}{{fields.label_tag}}{{fields}}{{fields.errors}}{% endfor %}
+                    {{form|crispy}}
                     <input class="btn btn-warning" type="submit" value="Update">
                     
-                    <a class="btn btn-info" href="{% url 'user:userread' %}">Back to Users</a>
+                    <a class="btn btn-info" href="{% url 'accounts:accounts' %}">Back to Accounts</a>
                     
                   </form>
                 
