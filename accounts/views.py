@@ -97,7 +97,8 @@ def register(request):
     return render(request, "accounts/register.html", {"form": fm})
 
 
-# function to add user, only accesible by admin
+# function to add user
+@login_required(redirect_field_name="")
 def add_account(request):
     if request.method == "POST":
         fm = RegisterForm(request.POST)
@@ -133,17 +134,27 @@ def add_account(request):
         fm = RegisterForm()
     return render(request, "accounts/manage/add.html", {"form": fm})
 
+
 # import pdb
 
 #         pdb.set_trace()
 
-# function to update user details, only accesible by admin
+# function to update user details
+@login_required(redirect_field_name="")
 def update_account(request, id):
     if request.method == "POST":
         data = CustomUser.objects.get(pk=id)
-        data1 = request.POST.copy()
-        data1["password"] = make_password(request.POST["password"])
-        fm = RegisterForm(data1, instance=data)
+        pw = request.POST.copy()
+        fm = RegisterForm(pw, instance=data)
+        if len(request.POST["password"]) <4:
+            context = {
+                "form": fm,
+                "error": "Password must be greater than 3",
+            }
+            return render(request, "accounts/manage/update.html", context)
+        pw["password"] = make_password(request.POST["password"])
+
+
         if fm.is_valid():
             fm.save()
             messages.success(request, "User details updated successfully.")
@@ -179,7 +190,8 @@ def user_login(request):
     return render(request, "accounts/login.html", {"form": fm})
 
 
-# function to show the account details from the database, only accessible to the admins.
+# function to show the account details from the database.
+@login_required(redirect_field_name="")
 def accounts(request):
     userdata = CustomUser.objects.all()
     return render(
@@ -187,7 +199,8 @@ def accounts(request):
     )
 
 
-# function to delete an account, only accessible to the admins.
+# function to delete an account
+@login_required(redirect_field_name="")
 def delete_account(request, id):
     if request.method == "POST":
         data = CustomUser.objects.get(pk=id)
@@ -215,7 +228,7 @@ def user_change_pass(request):
     return render(request, "accounts/password/changepass.html", {"form": fm})
 
 
-# function to display the details and image of the authenciated, as well as update image.
+# function to display the details and image of the authenticated, as well as update image.
 @login_required(redirect_field_name="")
 def profile(request):
     if request.method == "POST":

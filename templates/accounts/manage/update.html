@@ -41,6 +41,11 @@
                   <form method="POST" enctype="multipart/form-data" novalidate>
                    {% csrf_token %}
                     <div class="card-body">
+                        {% if error %}
+                            <div class="alert alert-danger" role="alert">
+                                 Error: {{ error }}
+                            </div>
+                        {% endif %}
                     {{form|crispy}}
                     <input class="btn btn-warning" type="submit" value="Update">
                     
