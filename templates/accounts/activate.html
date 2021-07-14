@@ -1,8 +1,8 @@
 {% autoescape off %}
-Please use the one time link provided below to verify your account.
+    Please use the one time link provided below to verify your account.
 
-http://{{domain}}{% url 'accounts:activate' uidb64=uid token=token %}
+    http://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}
 
-You'recieving this email because {{user.email}} signed up at our website, kindly
-ignore this email if it wasn't you. 
-{%endautoescape %}
+    You'recieving this email because {{ user.email }} signed up at our website, kindly
+    ignore this email if it wasn't you.
+{% endautoescape %}

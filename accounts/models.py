@@ -50,9 +50,7 @@ class CustomUser(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)  # a admin user; non super-user
     admin = models.BooleanField(default=False)  # a superuser
-    last_login = models.DateTimeField(
-        blank=True, null=True, verbose_name="last login"
-    )
+    last_login = models.DateTimeField(blank=True, null=True, verbose_name="last login")
     USERNAME_FIELD = "email"
 
     # def save(self, *args, **kwargs):

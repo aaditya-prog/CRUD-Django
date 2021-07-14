@@ -1,31 +1,24 @@
 # import pdb pdb.set_trace()
 from django.contrib import messages
-from django.contrib.auth import (
-    authenticate,
-    login,
-    logout,
-    update_session_auth_hash,
-)
+from django.contrib.auth import (authenticate, login, logout,
+                                 update_session_auth_hash)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.hashers import make_password
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.shortcuts import HttpResponseRedirect, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.encoding import (
-    DjangoUnicodeDecodeError,
-    force_bytes,
-    force_str,
-    force_text,
-)
+from django.utils.encoding import (DjangoUnicodeDecodeError, force_bytes,
+                                   force_str, force_text)
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from .decorators import login_excluded, admin_access
+
+from .decorators import admin_access, login_excluded
 from .forms import AddImageForm, RegisterForm
 from .models import CustomUser, Profile
 from .utlis import generate_token
-from django.contrib.auth.hashers import make_password
 
 
 # function to send an activation email
@@ -64,17 +57,13 @@ def register(request):
             Email = fm.cleaned_data["email"]
             Password = fm.cleaned_data["password"]
             if len(Name) < 4:
-                raise ValidationError(
-                    "Invalid Name, enter a valid name and try again."
-                )
+                raise ValidationError("Invalid Name, enter a valid name and try again.")
             if len(Address) < 4:
                 raise ValidationError(
                     "Invalid Address, enter a valid address and try again."
                 )
             if len(Email) < 10:
-                raise ValidationError(
-                    "Invalid Name, enter a valid name and try again."
-                )
+                raise ValidationError("Invalid Name, enter a valid name and try again.")
             user = CustomUser(
                 email=Email,
                 full_name=Name,
@@ -111,17 +100,13 @@ def add_account(request):
             Email = fm.cleaned_data["email"]
             Password = fm.cleaned_data["password"]
             if len(Name) < 4:
-                raise ValidationError(
-                    "Invalid Name, enter a valid name and try again."
-                )
+                raise ValidationError("Invalid Name, enter a valid name and try again.")
             if len(Address) < 4:
                 raise ValidationError(
                     "Invalid Address, enter a valid address and try again."
                 )
             if len(Email) < 10:
-                raise ValidationError(
-                    "Invalid Name, enter a valid name and try again."
-                )
+                raise ValidationError("Invalid Name, enter a valid name and try again.")
             user = CustomUser(
                 email=Email,
                 full_name=Name,
@@ -179,7 +164,7 @@ def user_login(request):
                 if user.admin:  # or some other check for admin users
                     return HttpResponseRedirect("/accounts/")
                 if not user.admin:  # or some other condition for normal users
-                    return HttpResponseRedirect('/product/')
+                    return HttpResponseRedirect("/product/")
     else:
         fm = AuthenticationForm()
     return render(request, "accounts/login.html", {"form": fm})
@@ -190,9 +175,7 @@ def user_login(request):
 @admin_access("product:productadd")
 def accounts(request):
     userdata = CustomUser.objects.all()
-    return render(
-        request, "accounts/manage/accounts.html", {"userdata": userdata}
-    )
+    return render(request, "accounts/manage/accounts.html", {"userdata": userdata})
 
 
 # function to delete an account
@@ -229,9 +212,7 @@ def user_change_pass(request):
 @login_required(redirect_field_name="")
 def profile(request):
     if request.method == "POST":
-        fm = AddImageForm(
-            request.POST, request.FILES, instance=request.user.profile
-        )
+        fm = AddImageForm(request.POST, request.FILES, instance=request.user.profile)
         if fm.is_valid():
             fm.save()
             messages.success(request, "Profile Picture Updated")

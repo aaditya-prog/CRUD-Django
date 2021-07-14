@@ -14,6 +14,7 @@ def login_excluded(redirect_to):
 
     return _method_wrapper
 
+
 def admin_access(redirect_to):
     """This decorator kicks authenticated users out of a view"""
 
