@@ -52,7 +52,6 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
-
 ]
 
 if settings.DEBUG:

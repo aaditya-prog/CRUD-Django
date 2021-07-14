@@ -14,7 +14,6 @@ from django.urls import reverse
 from django.utils.encoding import (DjangoUnicodeDecodeError, force_bytes,
                                    force_str, force_text)
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-import sentry_sdk
 from .decorators import admin_access, login_excluded
 from .forms import AddImageForm, RegisterForm
 from .models import CustomUser, Profile
