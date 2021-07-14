@@ -8,7 +8,6 @@ authors = ["Anupam1223 <anupam.siwakoti@gmail.com>"]
 python = "^3.9"
 Django = "^3.2.4"
 django-crispy-forms = "^1.12.0"
-decouple = "^0.0.7"
 isort = "^5.9.1"
 
 [tool.poetry.dev-dependencies]
@@ -18,6 +17,7 @@ mypy = "^0.902"
 bandit = "^1.7.0"
 django-sass-processor = "^1.0.1"
 Pillow = "^8.2.0"
+python-decouple = "^3.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

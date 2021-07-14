@@ -21,7 +21,9 @@ from django.utils.encoding import (
     force_text,
 )
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from .decorators import login_excluded
+from django.views.defaults import permission_denied
+
+from .decorators import login_excluded, admin_access
 from .forms import AddImageForm, RegisterForm
 from .models import CustomUser, Profile
 from .utlis import generate_token
@@ -99,7 +101,10 @@ def register(request):
 
 # function to add user
 @login_required(redirect_field_name="")
+@admin_access("product:productadd")
 def add_account(request):
+    if not request.user.admin:
+        redirect("products:products")
     if request.method == "POST":
         fm = RegisterForm(request.POST)
         if fm.is_valid():
@@ -141,19 +146,19 @@ def add_account(request):
 
 # function to update user details
 @login_required(redirect_field_name="")
+@admin_access("product:productadd")
 def update_account(request, id):
     if request.method == "POST":
         data = CustomUser.objects.get(pk=id)
         pw = request.POST.copy()
         fm = RegisterForm(pw, instance=data)
-        if len(request.POST["password"]) <4:
+        if len(request.POST["password"]) < 4:
             context = {
                 "form": fm,
                 "error": "Password must be greater than 3",
             }
             return render(request, "accounts/manage/update.html", context)
         pw["password"] = make_password(request.POST["password"])
-
 
         if fm.is_valid():
             fm.save()
@@ -175,16 +180,12 @@ def user_login(request):
             un = fm.cleaned_data["username"]
             pw = fm.cleaned_data["password"]
             user = authenticate(username=un, password=pw)
-            if not user.is_active:
-                messages.error(
-                    request,
-                    "Your email has not been verified yet, verify your email"
-                    " first.",
-                )
-                return render(request, "accounts/login.html", {"form": fm})
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect("/accounts/")
+                if user.admin:  # or some other check for admin users
+                    return HttpResponseRedirect("/accounts/")
+                if not user.admin:  # or some other condition for normal users
+                    return HttpResponseRedirect('/product/')
     else:
         fm = AuthenticationForm()
     return render(request, "accounts/login.html", {"form": fm})
@@ -192,6 +193,7 @@ def user_login(request):
 
 # function to show the account details from the database.
 @login_required(redirect_field_name="")
+@admin_access("product:productadd")
 def accounts(request):
     userdata = CustomUser.objects.all()
     return render(
@@ -201,6 +203,7 @@ def accounts(request):
 
 # function to delete an account
 @login_required(redirect_field_name="")
+@admin_access("product:productadd")
 def delete_account(request, id):
     if request.method == "POST":
         data = CustomUser.objects.get(pk=id)

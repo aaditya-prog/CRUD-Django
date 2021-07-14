@@ -13,3 +13,16 @@ def login_excluded(redirect_to):
         return _arguments_wrapper
 
     return _method_wrapper
+
+def admin_access(redirect_to):
+    """This decorator kicks authenticated users out of a view"""
+
+    def _method_wrapper(view_method):
+        def _arguments_wrapper(request, *args, **kwargs):
+            if not request.user.admin:
+                return redirect(redirect_to)
+            return view_method(request, *args, **kwargs)
+
+        return _arguments_wrapper
+
+    return _method_wrapper
