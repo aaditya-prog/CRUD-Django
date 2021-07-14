@@ -28,6 +28,6 @@ poetry will automatically create a virtual environment on your system
 and run the server. 
 
 Thus, you're good to go. I'd be glad to help you and
-receive your feedbacks on the project.
+receive your feedbacks on the project. :octocat:
 
 artdityadulal@gmail.com
