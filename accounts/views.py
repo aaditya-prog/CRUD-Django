@@ -1,4 +1,4 @@
-from bdb import set_trace
+# import pdb pdb.set_trace()
 from django.contrib import messages
 from django.contrib.auth import (
     authenticate,
@@ -21,8 +21,6 @@ from django.utils.encoding import (
     force_text,
 )
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.views.defaults import permission_denied
-
 from .decorators import login_excluded, admin_access
 from .forms import AddImageForm, RegisterForm
 from .models import CustomUser, Profile
@@ -139,10 +137,6 @@ def add_account(request):
         fm = RegisterForm()
     return render(request, "accounts/manage/add.html", {"form": fm})
 
-
-# import pdb
-
-#         pdb.set_trace()
 
 # function to update user details
 @login_required(redirect_field_name="")
