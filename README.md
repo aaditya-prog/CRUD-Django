@@ -4,7 +4,9 @@ This is the first real project I've worked on and published on GitHub, It is
 a simple CRUD application created using the powerful python framework, django.
 Using the application, basic CRUD operations can be carried out.
 User authentication system has also been managed in the application.
-You must register and verify your email to login into the system.
+You must register and verify your email to login into the system. ALso, only
+admins will have access to the user management templates i.e.(add, update or delete).
+The normal users can only add perform operations on products and categories.
 
 So, if you are interested to take a look and run the project locally, follow the
 guidelines below.
