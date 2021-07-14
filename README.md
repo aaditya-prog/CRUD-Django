@@ -12,7 +12,7 @@ guidelines below.
 For packaging and dependency management of the application, python poetry has
 been used.
 
-Install poetry using the pip command `pip install poetry`. If you are facing
+Install poetry using the command `pip install poetry`. If you are facing
 any problems installing and using poetry, read the docs here. https://python-poetry.org/docs/
 
 Clone the repository or download it manually.
@@ -21,8 +21,11 @@ Rename it to .env and change the database and email configurations.
 
 The default database used in the project is postgreSQL. If you wish to use any
 other database, change the database settings manually. Visit the official django
-document of the guides. https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+document for the guides. https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-Now go to your terminal, type `poetry run python manage.py runserver` and you're
-good to go. I'd be glad to help you and receive your feedbacks on the project.
-Reach out to me at artdityadulal@gmail.com
+Now go to your terminal, type `poetry run python manage.py runserver`,
+poetry will automatically create a virtual environment on your system
+and run the server. Thus, you're good to go. I'd be glad to help you and
+receive your feedbacks on the project.
+
+artdityadulal@gmail.com
