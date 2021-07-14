@@ -4,8 +4,8 @@ This is the first real project I've worked on and published on GitHub, It is
 a simple CRUD application created using the powerful python framework, django.
 Using the application, basic CRUD operations can be carried out.
 User authentication system has also been managed in the application.
-You must register and verify your email to login into the system. ALso, only
-admins will have access to the user management templates i.e.(add, update or delete).
+You must register and verify your email to login into the system. Also, only
+admins will have access to the user management templates i.e., (add, update and delete users).
 The normal users can only add perform operations on products and categories.
 
 So, if you are interested to take a look and run the project locally, follow the
@@ -29,7 +29,7 @@ documentation for the guide. [Django Database Settings](https://docs.djangoproje
 poetry will automatically create a virtual environment on your system
 and run the server. 
 
-Thus, you're good to go. I'd be glad to help you and
+You're good to go now. I'd be glad to help you and
 receive your feedbacks on the project:heart:
 
 artdityadulal@gmail.com
