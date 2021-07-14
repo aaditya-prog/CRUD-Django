@@ -1,4 +1,4 @@
-**Hi there, I'm Aaditya Dulal.**
+**Hi there, I'm [Aaditya Dulal](https://aadityadulal.com/)**
 
 This is the first real project I've worked on and published on GitHub, It is
 a simple CRUD application created using the powerful python framework, django.
