@@ -9,7 +9,6 @@ python = "^3.9"
 Django = "^3.2.4"
 django-crispy-forms = "^1.12.0"
 isort = "^5.9.1"
-pre-commit = "^2.13.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
